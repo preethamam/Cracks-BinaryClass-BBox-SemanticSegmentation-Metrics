@@ -18,6 +18,7 @@ function metrics = multiclassPrecisionRecall(confmat)
 %                    metrics.Accuracy = Accuracy;
 %                    metrics.Specificity = Specificity;
 %                    metrics.F1score = F1score;
+
 % Array initialization
 N = size(confmat,1);
 Precision = zeros(1,N);

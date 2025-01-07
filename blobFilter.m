@@ -1,4 +1,22 @@
-function outputImage = blobFilter(BW1, blobfilter_sigma)    
+function outputImage = blobFilter(BW1, blobfilter_sigma)  
+%%***********************************************************************%
+%*                            BLob filter                               *%
+%*                    Removes noisy blobs/artifacts                     *%
+%*                                                                      *%
+%* Code author: Preetham Manjunatha                                     *%
+%* Github link: https://github.com/preethamam                           %*
+%* Date: 01/7/2025                                                     *%
+%************************************************************************%
+%
+%************************************************************************%
+%
+% Usage: outputImage = blobFilter(BW1, blobfilter_sigma)
+% Inputs: BW1  - Input binary image
+%         blobfilter_sigma - blobs filter standard deviation
+% 
+% Outputs: outputImage - output image
+%
+%
     % Get connected components
     CC = bwconncomp(BW1);
     S  = regionprops(CC,'Area');

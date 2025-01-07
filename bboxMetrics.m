@@ -1,7 +1,35 @@
-function [ TruePositiveBbox, FalsePositiveBbox, FalseNegativeBbox] = bboxMetrics...
-    (input, imnum, Ioriginal, Igrayscale, Iground2PrecisionRecall, Imfat, blobFilteredImage, ...
+function [TruePositiveBbox, FalsePositiveBbox, FalseNegativeBbox] = bboxMetrics...
+    (input, imnum, Ioriginal, Igrayscale, Iground2PrecisionRecall, segmentedImage, blobFilteredImage, ...
     ImageID)
-  
+%%***********************************************************************%
+%*                     Binary class bounding box metrics                *%
+%*        Finds the true, false positives and  false negatives.         *%
+%*                                                                      *%
+%* Code author: Preetham Manjunatha                                     *%
+%* Github link: https://github.com/preethamam                           *%
+%* Date: 01/7/2025                                                      *%
+%************************************************************************%
+%
+%************************************************************************%
+%
+% Usage: [TruePositiveBbox, FalsePositiveBbox, FalseNegativeBbox] = bboxMetrics...
+%                       (input, imnum, Ioriginal, Igrayscale, Iground2PrecisionRecall, 
+%                       segmentedImage, blobFilteredImage, ImageID)
+%
+% Inputs: input  - Ground-truth image
+%         imnum - Predicted image
+%         Ioriginal - Original RGB image
+%         Igrayscale - Grayscale image
+%         Iground2PrecisionRecall - Groundtruth image
+%         segmentedImage - Predicted/segmented image
+%         blobFilteredImage - Blob filtered image
+%         ImageID - Image path ID
+%
+% Outputs: TruePositiveBbox - True positive bounding boxes count
+%          FalsePositiveBbox - False positive bounding boxes count
+%          FalseNegativeBbox - False negative bounding boxes count
+%
+
 % Ground-truth BBox
 CCIground = bwconncomp(Iground2PrecisionRecall);
 statsIground = regionprops(CCIground,'Area','BoundingBox');
@@ -125,8 +153,8 @@ if (strcmp(input.figShow_TPFPFN,'yes'))
 
     % Row 2
     % Overlay 
-    BW_overlay_classifier = imoverlay(Imfat, blobFilteredImage, [1 1 0]);
-    ax4 = nexttile; imshow(Imfat); title('MFAT', 'fontsize', 25)
+    BW_overlay_classifier = imoverlay(segmentedImage, blobFilteredImage, [1 1 0]);
+    ax4 = nexttile; imshow(segmentedImage); title('MFAT', 'fontsize', 25)
     ax5 = nexttile; imshow(blobFilteredImage); title('Blob Filtered Output', 'fontsize', 25)
     ax6 = nexttile; imshow(BW_overlay_classifier); title('Blob/filt. Overlay', 'fontsize', 25);
 
