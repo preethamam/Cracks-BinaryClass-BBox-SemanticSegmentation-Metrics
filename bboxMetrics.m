@@ -1,6 +1,5 @@
-function [TruePositiveBbox, FalsePositiveBbox, FalseNegativeBbox] = bboxMetrics...
-    (input, imnum, Ioriginal, Igrayscale, Iground2PrecisionRecall, segmentedImage, blobFilteredImage, ...
-    ImageID)
+function [TruePositiveBbox, FalsePositiveBbox, FalseNegativeBbox, RGB] = bboxMetrics...
+    (input, Ioriginal, Iground2PrecisionRecall, blobFilteredImage)
 %%***********************************************************************%
 %*                     Binary class bounding box metrics                *%
 %*        Finds the true, false positives and  false negatives.         *%
@@ -17,13 +16,9 @@ function [TruePositiveBbox, FalsePositiveBbox, FalseNegativeBbox] = bboxMetrics.
 %                       segmentedImage, blobFilteredImage, ImageID)
 %
 % Inputs: input  - Ground-truth image
-%         imnum - Predicted image
 %         Ioriginal - Original RGB image
-%         Igrayscale - Grayscale image
 %         Iground2PrecisionRecall - Groundtruth image
-%         segmentedImage - Predicted/segmented image
 %         blobFilteredImage - Blob filtered image
-%         ImageID - Image path ID
 %
 % Outputs: TruePositiveBbox - True positive bounding boxes count
 %          FalsePositiveBbox - False positive bounding boxes count
@@ -38,18 +33,6 @@ statsIground = regionprops(CCIground,'Area','BoundingBox');
 CCIclassifier = bwconncomp(blobFilteredImage);
 statsIclassifier = regionprops(CCIclassifier,'Area','BoundingBox');
 
-
-% True positive
-TP = bitand(Iground2PrecisionRecall, blobFilteredImage);
-
-% False positive
-FP = imsubtract(blobFilteredImage,TP);
-FP(FP == -1)  = 1;
-
-% False negative
-FN = imsubtract(Iground2PrecisionRecall,TP);
-FN(FN == -1)  = 1;
-
 % Count initialization
 tpCount = 0;
 fpCount = 0;
@@ -57,19 +40,8 @@ fnCount = 0;
 
 Ioriginal_dup = Ioriginal;
 
-% Extract file parts
-[pathstr,filename,ext] = fileparts(ImageID); %#ok<ASGLU>
-
 % BBox image holder
 RGB = [];
-
-% Find TP/FP/FN counts and plot the bounding boxes
-if (strcmp(input.figShow_TPFPFN,'yes'))
-    fh = figure(1);    
-    fh.WindowState = 'maximized';
-    tiledlayout(4, 3, TileSpacing="tight", Padding="tight");
-    hold on
-end
 
 if~(isempty(statsIground))
     gtarray = zeros(length(statsIground),1);
@@ -140,72 +112,11 @@ else
     end
 end
 
-
-% Plot the output and save them if needed
-if (strcmp(input.figShow_TPFPFN,'yes'))
-    hold off
-    
-    % Row 1
-    ax1 = nexttile; imshow(Ioriginal); title('Original', 'fontsize', 25)   
-    ax2 = nexttile; imshow(Igrayscale); title('Grayscale', 'fontsize', 25)
-    ax3 = nexttile; imshow(Iground2PrecisionRecall); title('Ground-truth', 'fontsize', 25)
-   
-
-    % Row 2
-    % Overlay 
-    BW_overlay_classifier = imoverlay(segmentedImage, blobFilteredImage, [1 1 0]);
-    ax4 = nexttile; imshow(segmentedImage); title('MFAT', 'fontsize', 25)
-    ax5 = nexttile; imshow(blobFilteredImage); title('Blob Filtered Output', 'fontsize', 25)
-    ax6 = nexttile; imshow(BW_overlay_classifier); title('Blob/filt. Overlay', 'fontsize', 25);
-
-    % Row 3
-    TP_overlay = imoverlay(Ioriginal, TP, [1 0 0]);
-    ax7 = nexttile; imshow(TP_overlay);  title('TP pixels', 'fontsize', 25);
-
-    FP_overlay = imoverlay(Ioriginal, FP, [0 1 0]);
-    ax8 = nexttile; imshow(FP_overlay); title('FP pixels', 'fontsize', 25)
-
-    FN_overlay = imoverlay(Ioriginal, FN, [0 0 1]);
-    ax9 = nexttile; imshow(FN_overlay); title('FN pixels', 'fontsize', 25);
-
-    % Row 4
-    if (isempty(RGB))
-        ax10 = nexttile; imshow([]);
-    else
-        ax10 = nexttile; imshow(RGB); title('Bounding Boxes', 'fontsize', 25)
-    end
-    
-    ax11 = nexttile; imshow(Ioriginal); hold on;
-    h = imshow(Iground2PrecisionRecall); title('Ground-truth Quality', 'fontsize', 25);
-    set(h, 'AlphaData', 0.4); % .5 transparency
-    
-    % Overall TPFPFN pixels
-    TP_red = imoverlay(Iground2PrecisionRecall, TP, [1 0 0]);
-    FP_green = imoverlay(TP_red, FP, [0 1 0]);
-    FN_blue = imoverlay(FP_green, FN, [0 0 1]);
-    
-    ax12 = nexttile; imshow(Ioriginal); hold on;
-    h1 = imshow(FN_blue); title('Overall Pixels (TPFPFN)', 'fontsize', 25);
-    set(h1, 'AlphaData', 0.35); % .5 transparency
-    stitle = sgtitle(['Image No.: ' num2str(imnum) ' | ', 'File Name: ' filename, ' | ' input.classifierName]);
-    set(stitle, 'Interpreter', 'none')
-
-    % Link axes
-    linkaxes([ax1,ax2,ax3,ax4,ax5,ax6,ax7,ax8,ax9,ax10,ax10,ax11,ax12],'xy')
-    
-    drawnow;
-    
-    % Save the images
-    exportgraphics(fh, 'crack_bboxes_tpfpfntn_pixels.png')
-end
-
-
 % Calculate the TP, FP and FN Bounding box hits
 TruePositiveBbox  = tpCount;
 
 FalsePositiveBbox = fpCount;
 
 FalseNegativeBbox = fnCount;
-
 end
 

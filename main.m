@@ -83,13 +83,19 @@ for i = 1:length(imFiles)
     blobFilterImage = blobFilter(mfatOutputImage, blobFilterSigma);  
     
     % Bounding box metrics collection
-    [tpBbox, fpBbox, fnBbox] = bboxMetrics(input, i, inputImage, imageGray, labels, ...
-        mfatOutputImage, blobFilterImage, imageID);
+    [tpBbox, fpBbox, fnBbox, rgbBboxOverlay] = bboxMetrics(input, inputImage, labels, ...
+                                           blobFilterImage);
     TPFPFNBboxMFAT(i,:) = [tpBbox, fpBbox, fnBbox];
     
     % Semantic segmentation metrics collection
     [tpSSeg, fpSSeg, fnSSeg, tnSSeg] = semSegMetrics(labels, blobFilterImage);
     TPFPFNSemSegMFAT(i,:) = [tpSSeg, fpSSeg, fnSSeg, tnSSeg];
+
+    % Plot the metrics images
+    plotMetrics(input, i, inputImage, imageGray, labels, mfatOutputImage, blobFilterImage, ...
+    imageID, rgbBboxOverlay)
+
+    pause(3)
 end
 
 
