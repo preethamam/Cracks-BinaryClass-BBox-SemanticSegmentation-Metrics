@@ -81,6 +81,6 @@ function plotMetrics(input, imnum, Ioriginal, Igrayscale, Iground2PrecisionRecal
         drawnow;
         
         % Save the images
-        exportgraphics(fh, 'crack_bboxes_tpfpfntn_pixels.png')
+        exportgraphics(fh, 'assets/crack_bboxes_tpfpfntn_pixels_final.png')
     end
 end

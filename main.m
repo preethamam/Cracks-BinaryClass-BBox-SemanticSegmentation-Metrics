@@ -94,8 +94,6 @@ for i = 1:length(imFiles)
     % Plot the metrics images
     plotMetrics(input, i, inputImage, imageGray, labels, mfatOutputImage, blobFilterImage, ...
     imageID, rgbBboxOverlay)
-
-    pause(3)
 end
 
 
