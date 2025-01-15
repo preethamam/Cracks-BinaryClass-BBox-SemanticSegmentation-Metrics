@@ -57,13 +57,11 @@ function plotMetrics(input, imnum, Ioriginal, Igrayscale, Iground2PrecisionRecal
             ax10 = nexttile; imshow(rgbBboxOverlay); title('Bounding Boxes', 'fontsize', 25)
         end
         
-        qualityOverlay = imoverlay(Iground2PrecisionRecall, Iground2PrecisionRecall, [0 1 0]);
+
+        lab_overlay = labeloverlay(Ioriginal, Iground2PrecisionRecall, Transparency = 0.75, Colormap = [0 1 0]);        
         ax11 = nexttile;         
-        h1 = imshow(Ioriginal); hold on;
-        h2 = imshow(qualityOverlay); 
+        imshow(lab_overlay);
         title('Ground-truth Quality', 'fontsize', 25);
-        set(h1, 'AlphaData', 1); % .5 transparency
-        set(h2, 'AlphaData', 0.4); % .5 transparency
         
         % Overall TPFPFN pixels
         TP_red = imoverlay(Ioriginal, TP, [0 1 0]);
