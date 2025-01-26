@@ -15,7 +15,7 @@ Sample images are used from the article: <br />
 
 # Requirements
 MATLAB <br />
-MATLAB Image Processing Toolbox
+Image Processing Toolbox
 
 # Feedback
 Please rate and provide feedback for the further improvements.
